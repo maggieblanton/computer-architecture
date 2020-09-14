@@ -1,4 +1,3 @@
-
 #include<iostream>
 #include<fstream>
 #include<string>
@@ -8,41 +7,47 @@
 #include<sstream>
 
 using namespace std;
-string type; 
 
 typedef unsigned int int32;  
-//int32 addr;
-string instr;
 
+// define data type for .data
 typedef struct data { 
     int32 addr;
     string operand;
     int32 content;
 } Data;
 
+// define data type for .text
 typedef struct text { 
     int32 addr;
-    //string instruction; 
     int32 instruction; 
     string operand;
 } Text;
 
-
+// initialize arrays
 Text text_segment[50];
 Data data_segment[50];
 Data stack[50];
-
-string line;
-string cmp;
-//string popFix;
 char data_mem[20];
 char text_mem[20];
+
+// declare string variables
+string line;
+string cmp;
+string type; 
+
+// set starting addresses
 int32 data_addr = 0x00000000;
 int32 text_addr = 0x00000010;
+
+// initialze indexes
 int32 data_index = 0;
 int32 text_index = 0;
+
+// declare write address
 int32 write_addr;
 
+// determine line type
 void typeCheck(string line) { 
     if (line.compare(".data") == 0) {
         type = "data";
@@ -52,8 +57,8 @@ void typeCheck(string line) {
     }
 }
 
+// assign code for varying instructions
 int assignInstruction(string instr) {
-    //cout << "\nINSTR: " << instr;
     if (instr.compare("PUSH") == 0) {
         return 1; 
     }
@@ -74,19 +79,21 @@ int assignInstruction(string instr) {
     } 
 }
 
+// read and store text file 
 void storeStck() { 
     fstream stackCode;
     int index;
+    //open stackCode.txt 
     stackCode.open("stackCode.txt", ios::in);
+    // read stackCode.txt
     if (stackCode.is_open()) { 
-
+        // parse ASCII file by line
         while(getline(stackCode, line)) { 
+            // determine line type
             typeCheck(line);
-            //if (type.compare("data") == 0) { 
+            // add line to data_segment
             if (type.compare("data") == 0) { 
-
                 if (line.compare(".data") != 0 && !line.empty()) { 
-                    //add to data
                     index = 0;
                     string placeholder = "";
                     data_segment[data_index].addr = data_addr;
@@ -98,22 +105,12 @@ void storeStck() {
                     }
                     data_segment[data_index].operand = placeholder;
                     data_segment[data_index].content = data_mem[11];
-
-                    //cout<< "\n ADDR: " << data_segment[data_index].addr;
-                    //cout<< "\n PLACEHOLDER: " << data_segment[data_index].operand;
-                    //cout<< "\n PLACEHOLDER: " << data_segment[data_index].content;
-
-
                     data_index++;
-                    //cout<<"\nData: " << line;
                 }
-
             }
+            // add line to text_segment
             else if (type.compare("text") == 0) { 
-
                 if (line.compare(".text") != 0 && !line.empty()) { 
-                    //add to text
-                    //memset(text_mem, 0, sizeof(text_mem));
                     text_mem[3] = ' ';
                     index = 0;
                     string placeholder = "";
@@ -121,14 +118,11 @@ void storeStck() {
                     text_addr++;
                     std::copy(line.begin(), line.end(), text_mem); 
                     cmp = text_mem[3];
-
                     if (cmp.compare(" ") == 0) { 
                         while (index < 3) { 
                         placeholder = placeholder + text_mem[index];
                         index++;
                         }
-                        //text_segment[text_index].instruction = placeholder;
-
                         text_segment[text_index].instruction = assignInstruction(placeholder);
                         cmp = text_mem[0];
                         if (cmp.compare("P") == 0) {
@@ -146,8 +140,6 @@ void storeStck() {
                             placeholder = placeholder + text_mem[index];
                             index++;
                         }
-                        //text_segment[text_index].instruction = placeholder;
-                        //cout<<"\nTEXT TO COMPARE: " << placeholder;
                         text_segment[text_index].instruction = assignInstruction(placeholder);
                         placeholder = "";
                         index = 0;
@@ -157,31 +149,27 @@ void storeStck() {
                         }
                         text_segment[text_index].operand = placeholder;
                     }
-                    //cout<< "\n ADDR: " << text_segment[text_index].addr;
-                    //cout<< "\n PLACEHOLDER: " << text_segment[text_index].instruction;
-                    //cout<< "\n PLACEHOLDER: " << text_segment[text_index].operand;
-
                     text_index++;
-                    //cout<<"\nText: " << line;
                 }
             }
-
+            // print line
             cout<<"\n" << line;
         }
     }
 
 }
 
+// load currentText 
 Text loadMem(int32 address) {
     for(int i = 0; i < sizeof(text_segment) + 1; i++) {
 		if (std::to_string(text_segment[i].addr).compare(std::to_string(address)) == 0) {
-        //if ((text_segment[i].addr).compare((int32) address) == 0) {
     		return text_segment[i];
         }
     }
     exit (EXIT_FAILURE);
 }
 
+// find data associated with text operand
 Data assignData(string address) { 
 	for(int i = 0; i < sizeof(data_segment) + 1; i++) {
 		if ((data_segment[i].operand).compare(address) == 0) {
@@ -192,115 +180,119 @@ Data assignData(string address) {
     exit (EXIT_FAILURE);
 }
 
+// print current state of stack
 void printStck() { 
-
 	cout << "\n";
 	for (int i = 0; i < 7; i++) {
 		cout << " " << (int) stack[i].content - 48;
 	}
 }
 
+// print results
 void printResults() { 
-    cout << "\n\n"; 
     for (int i = 0; i < 5; i++) {
         cout << "\n" << data_segment[i].operand << " " << (int) data_segment[i].content - 48;
     }
 }
 
-
 int main() { 
+    cout << "\nREADING stackCode.txt" << "\nFILE CONTENT:";
     storeStck();
-
+    cout << "\n\nSUCCESSFUL READ";
+    // initialize program counter
     int PC = 0;
     bool user_mode = true;
+    // reset text_addr
     text_addr = 0x00000010;
-    //data_addr = 0x00000000;
+    // declare currentData
 	Data currentData;
-	cout << "\n";
-
-
-	//initialize stack variables
+    // set stack index to -1
 	int top = -1; 
-
-	//Data emptyData;
-	//emptyData.content = 0;
-
+    // set stack contents to 0
 	for (int i = 0; i < 49; i++) { 
 		stack[i].content = 48;
 	}
 
-
-
-
-
+    cout << "\n\nSTARTING STACK SIMULATOR\nSTACK CONTENT:\n\nBOTTOM <--> TOP"; ;
     while(user_mode) { 
-        //int32 value = 0x00000000;
-
         Text currentText = loadMem(PC + text_addr);
-
         PC++;
-
         switch (currentText.instruction) { 
-		//switch(text_segment[PC].instruction) {
-
-            case 1: //PUSH
+            // PUSH
+            case 1: 
+                // find data associated with text operand
 				currentData = assignData(currentText.operand);
 				if (top > 49) { 
 					exit (EXIT_FAILURE);
 				}
+                // add data to stack
 				else {
 					stack[top + 1] = currentData;
+                    // increment top
 					top++;
 				}
-
+                // print results
 				printStck(); 
-
 				break;
-            case 2: //POP
+            // POP
+            case 2: 
+                // find data associated with text operand
 				currentData = assignData(currentText.operand);
 				currentData.content = (int) stack[top].content - 48;
-				//cout << " POP: " << currentData.operand << " " << currentData.content;
+                // write content to data_segment
                 data_segment[write_addr].content = currentData.content + 48;
+                // set top to 0
 				stack[top].content = (int32) 48;
+                // decrement top
 				top--;
-				printStck();
+                // print results
+				printStck(); 
                 break;
-            case 3: //ADD
+            // ADD 
+            case 3:
+                // initialize sum
 				int sum;
 				sum = 0;
+                // sum top two stack contents
 				sum = sum + (int) stack[top - 1].content + (int) stack[top].content - 96;
-				//sum = sum + (int) stack[top].content - 48;
-				//cout << " SUM: " << sum;
+                // set top content to 0
 				stack[top].content = (int32) 48;
+                // decrement top
 				top--;
+                // set top content to sum
 				stack[top].content = sum + 48;
+                // print results
 				printStck();
-                //cout << "\nADD: " << PC;
                 break;
-            case 4: //MULT
-				int product;
+            case 4: // MULT
+				int product; // initialize product
 				product = 0;
+                // mult top two stack contents
 				product = ((int) stack[top - 1].content - 48) * ((int) stack[top].content - 48);
+                // set top content to 0
 				stack[top].content = (int32) 48;
+                // decrement top
 				top--;
+                // set top content to product
 				stack[top].content = product + 48;
+                // print results
 				printStck();
-
-                //cout << "\nMULT: " << PC;
                 break;
-            case 5: //END 
+            // END
+            case 5: 
+                // exit loop
                 user_mode = false;
-				//printStck();
                 break;
             default: 
                 user_mode = false; 
 
         }
-		//PC++;
 
     }
 
+    cout << "\n\nSIMULATION COMPLETE\n\nRESULTS:\n";
     printResults();
+    cout << "\n\nEXITING PROGRAM\n";
 
     return 0;
 }
