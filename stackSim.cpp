@@ -56,6 +56,7 @@ int32 data_addr = 0x00000000;
 int32 text_addr = 0x00000010;
 int32 data_index = 0;
 int32 text_index = 0;
+int32 write_addr;
 
 void typeCheck(string line) { 
     if (line.compare(".data") == 0) {
@@ -198,6 +199,7 @@ Text loadMem(int32 address) {
 Data assignData(string address) { 
 	for(int i = 0; i < sizeof(data_segment) + 1; i++) {
 		if ((data_segment[i].operand).compare(address) == 0) {
+			write_addr = (int32) i;
     		return data_segment[i];
         }
     }
@@ -205,10 +207,16 @@ Data assignData(string address) {
 }
 
 void printStck() { 
-
 	cout << "\n";
 	for (int i = 0; i < 7; i++) {
 		cout << " " << (int) stack[i].content - 48;
+	}
+}
+
+void printResults() { 
+	cout << "\n\n"; 
+	for (int i = 0; i < 5; i++) { 
+		cout << "\n" << data_segment[i].operand << " " << (int) data_segment[i].content - 48;
 	}
 }
 
@@ -233,9 +241,6 @@ int main() {
 	for (int i = 0; i < 49; i++) { 
 		stack[i].content = 48;
 	}
-
-
-
 
 
     while(user_mode) { 
@@ -265,6 +270,7 @@ int main() {
 				currentData = assignData(currentText.operand);
 				currentData.content = (int) stack[top].content - 48;
 				cout << " POP: " << currentData.operand << " " << currentData.content;
+				data_segment[write_addr].content = currentData.content + 48;
 				stack[top].content = (int32) 48;
 				top--;
 				printStck();
@@ -303,17 +309,7 @@ int main() {
 		//PC++;
 		
     }
-
-    /* while(user_mode) { 
-    read memory at PC 
-    increment PC 
-    case PUSH: do something, break;
-    case POP: do something, break;
-    case ADD: do something, break;
-    case MULT: do something, break;
-    case END: do something, break;
-}
-*/
     
+	printResults();
     return 0;
 }
