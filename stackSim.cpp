@@ -7,13 +7,15 @@
 #include<sstream>
 
 using namespace std;
+//using std::cout;
+//using std::cin;
 
 typedef unsigned int int32;  
 
 // define data type for .data
 typedef struct data { 
     int32 addr;
-    string operand;
+    std::string operand;
     int32 content;
 } Data;
 
@@ -21,20 +23,20 @@ typedef struct data {
 typedef struct text { 
     int32 addr;
     int32 instruction; 
-    string operand;
+    std::string operand;
 } Text;
 
 // initialize arrays
 Text text_segment[50];
 Data data_segment[50];
-Data stack[50];
+Data stack[100];
 char data_mem[20];
 char text_mem[20];
 
 // declare string variables
-string line;
-string cmp;
-string type; 
+std::string line;
+std::string cmp;
+std::string type; 
 
 // set starting addresses
 int32 data_addr = 0x00000000;
@@ -45,7 +47,7 @@ int32 data_index = 0;
 int32 text_index = 0;
 
 // declare write address
-int32 write_addr;
+int write_addr;
 
 // determine line type
 void typeCheck(string line) { 
@@ -62,21 +64,21 @@ int assignInstruction(string instr) {
     if (instr.compare("PUSH") == 0) {
         return 1; 
     }
-    else if (instr.compare("POP") == 0) {
-        return 2; 
-    }
     else if (instr.compare("ADD") == 0) {
-        return 3;
+        return 2;
     }
     else if (instr.compare("MULT") == 0) {
-        return 4;
+        return 3;
     }
     else if (instr.compare("END") == 0) {
-        return 5;
+        return 4;
     }
-    else {
-        return 6;
+    else if (instr.compare("POP") != 0) {
+        return 5;
     } 
+    else { 
+        return 6;
+    }
 }
 
 // read and store text file 
@@ -196,7 +198,8 @@ void printResults() {
 }
 
 int main() { 
-    cout << "\nREADING stackCode.txt" << "\nFILE CONTENT:";
+    
+    cout << "\nREADING stackCode.txt" << "\nFILE CONTENT:\n";
     storeStck();
     cout << "\n\nSUCCESSFUL READ";
     // initialize program counter
@@ -209,15 +212,17 @@ int main() {
     // set stack index to -1
 	int top = -1; 
     // set stack contents to 0
-	for (int i = 0; i < 49; i++) { 
+	for (int i = 0; i < 99; i++) { 
 		stack[i].content = 48;
 	}
 
     cout << "\n\nSTARTING STACK SIMULATOR\nSTACK CONTENT:\n\nBOTTOM <--> TOP"; ;
     while(user_mode) { 
         Text currentText = loadMem(PC + text_addr);
-        PC++;
-        switch (currentText.instruction) { 
+        //PC++;
+        //Text currentText;
+        //currentText.instruction = 4;
+        switch ((int) currentText.instruction) { 
             // PUSH
             case 1: 
                 // find data associated with text operand
@@ -234,24 +239,10 @@ int main() {
                 // print results
 				printStck(); 
 				break;
-            // POP
-            case 2: 
-                // find data associated with text operand
-				currentData = assignData(currentText.operand);
-				currentData.content = (int) stack[top].content - 48;
-                // write content to data_segment
-                data_segment[write_addr].content = currentData.content + 48;
-                // set top to 0
-				stack[top].content = (int32) 48;
-                // decrement top
-				top--;
-                // print results
-				printStck(); 
-                break;
             // ADD 
-            case 3:
+            case 2:
                 // initialize sum
-				int sum;
+				int32 sum;
 				sum = 0;
                 // sum top two stack contents
 				sum = sum + (int) stack[top - 1].content + (int) stack[top].content - 96;
@@ -264,8 +255,9 @@ int main() {
                 // print results
 				printStck();
                 break;
-            case 4: // MULT
-				int product; // initialize product
+            // MULT
+            case 3: 
+				int32 product; // initialize product
 				product = 0;
                 // mult top two stack contents
 				product = ((int) stack[top - 1].content - 48) * ((int) stack[top].content - 48);
@@ -279,20 +271,37 @@ int main() {
 				printStck();
                 break;
             // END
-            case 5: 
+            case 4: 
                 // exit loop
                 user_mode = false;
                 break;
+            // INVALID
+            case 5: 
+                cout << "\n\nERROR: INVALID COMMAND. \n\nEXITING PROGRAM";
+                exit (EXIT_FAILURE);
+                user_mode = false;
+                break;
+            // POP
             default: 
+                // find data associated with text operand
+				currentData = assignData(currentText.operand);
+				currentData.content = (int) stack[top].content - 48;
+                // write content to data_segment
+                data_segment[write_addr].content = currentData.content + 48;
+                // set top to 0
+				stack[top].content = (int32) 48;
+                // decrement top
+				top--;
+                // print results
+				printStck(); 
                 user_mode = false; 
-
         }
+        PC++;
 
     }
 
     cout << "\n\nSIMULATION COMPLETE\n\nRESULTS:\n";
     printResults();
     cout << "\n\nEXITING PROGRAM\n";
-
     return 0;
 }
