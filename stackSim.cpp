@@ -1,26 +1,11 @@
-// open source code 
-// load source code and data into memory 
-// initialize PC 
-// user_mode = true; 
-
-
-/* while(user_mode) { 
-    read memory at PC 
-    increment PC 
-    case PUSH: do something, break;
-    case POP: do something, break;
-    case ADD: do something, break;
-    case MULT: do something, break;
-    case END: do something, break;
-}
-*/
-
-// print summary
 
 #include<iostream>
 #include<fstream>
 #include<string>
 #include<string.h>
+#include<cstdlib>
+#include<cstdio>
+#include<sstream>
 
 using namespace std;
 string type; 
@@ -94,12 +79,12 @@ void storeStck() {
     int index;
     stackCode.open("stackCode.txt", ios::in);
     if (stackCode.is_open()) { 
-       
+
         while(getline(stackCode, line)) { 
             typeCheck(line);
             //if (type.compare("data") == 0) { 
             if (type.compare("data") == 0) { 
-            
+
                 if (line.compare(".data") != 0 && !line.empty()) { 
                     //add to data
                     index = 0;
@@ -122,10 +107,10 @@ void storeStck() {
                     data_index++;
                     //cout<<"\nData: " << line;
                 }
-                
+
             }
             else if (type.compare("text") == 0) { 
-          
+
                 if (line.compare(".text") != 0 && !line.empty()) { 
                     //add to text
                     //memset(text_mem, 0, sizeof(text_mem));
@@ -136,7 +121,7 @@ void storeStck() {
                     text_addr++;
                     std::copy(line.begin(), line.end(), text_mem); 
                     cmp = text_mem[3];
-               
+
                     if (cmp.compare(" ") == 0) { 
                         while (index < 3) { 
                         placeholder = placeholder + text_mem[index];
@@ -184,12 +169,13 @@ void storeStck() {
             cout<<"\n" << line;
         }
     }
-    
+
 }
 
 Text loadMem(int32 address) {
     for(int i = 0; i < sizeof(text_segment) + 1; i++) {
 		if (std::to_string(text_segment[i].addr).compare(std::to_string(address)) == 0) {
+        //if ((text_segment[i].addr).compare((int32) address) == 0) {
     		return text_segment[i];
         }
     }
@@ -199,7 +185,7 @@ Text loadMem(int32 address) {
 Data assignData(string address) { 
 	for(int i = 0; i < sizeof(data_segment) + 1; i++) {
 		if ((data_segment[i].operand).compare(address) == 0) {
-			write_addr = (int32) i;
+            write_addr = (int32) i;
     		return data_segment[i];
         }
     }
@@ -207,6 +193,7 @@ Data assignData(string address) {
 }
 
 void printStck() { 
+
 	cout << "\n";
 	for (int i = 0; i < 7; i++) {
 		cout << " " << (int) stack[i].content - 48;
@@ -214,10 +201,10 @@ void printStck() {
 }
 
 void printResults() { 
-	cout << "\n\n"; 
-	for (int i = 0; i < 5; i++) { 
-		cout << "\n" << data_segment[i].operand << " " << (int) data_segment[i].content - 48;
-	}
+    cout << "\n\n"; 
+    for (int i = 0; i < 5; i++) {
+        cout << "\n" << data_segment[i].operand << " " << (int) data_segment[i].content - 48;
+    }
 }
 
 
@@ -234,22 +221,25 @@ int main() {
 
 	//initialize stack variables
 	int top = -1; 
-	
+
 	//Data emptyData;
 	//emptyData.content = 0;
-	
+
 	for (int i = 0; i < 49; i++) { 
 		stack[i].content = 48;
 	}
 
 
+
+
+
     while(user_mode) { 
         //int32 value = 0x00000000;
-        
+
         Text currentText = loadMem(PC + text_addr);
-    
+
         PC++;
-       
+
         switch (currentText.instruction) { 
 		//switch(text_segment[PC].instruction) {
 
@@ -269,8 +259,8 @@ int main() {
             case 2: //POP
 				currentData = assignData(currentText.operand);
 				currentData.content = (int) stack[top].content - 48;
-				cout << " POP: " << currentData.operand << " " << currentData.content;
-				data_segment[write_addr].content = currentData.content + 48;
+				//cout << " POP: " << currentData.operand << " " << currentData.content;
+                data_segment[write_addr].content = currentData.content + 48;
 				stack[top].content = (int32) 48;
 				top--;
 				printStck();
@@ -307,9 +297,10 @@ int main() {
 
         }
 		//PC++;
-		
+
     }
-    
-	printResults();
+
+    printResults();
+
     return 0;
 }
