@@ -1,3 +1,7 @@
+/* Referenced http://www.cplusplus.com/reference/fstream/ofstream/open/ 
+   for instructions on how to clear text file. 
+   Reflected in the printResults() method and commented accordingly. */
+
 #include<iostream>
 #include<fstream>
 #include<string>
@@ -7,8 +11,6 @@
 #include<sstream>
 
 using namespace std;
-//using std::cout;
-//using std::cin;
 
 typedef unsigned int int32;  
 
@@ -192,9 +194,19 @@ void printStck() {
 
 // print results
 void printResults() { 
+    std::ofstream ofs;
+    ofs.open ("stackOutput.txt", std::ofstream::out | std::ofstream::trunc); // line referenced from source
     for (int i = 0; i < 5; i++) {
-        cout << "\n" << data_segment[i].operand << " " << (int) data_segment[i].content - 48;
+        if (i != 0) {
+            ofs << "\n" << data_segment[i].operand << " " << (int) data_segment[i].content - 48;
+        }
+        else { 
+            ofs << data_segment[i].operand << " " << (int) data_segment[i].content - 48;
+        }
+        cout << "\n" << data_segment[i].operand << " " << (int) data_segment[i].content - 48;  
     }
+    ofs.close(); // line referenced from source
+    cout << "\n\nRESULTS WRITTEN TO stackOutput.txt";
 }
 
 int main() { 
@@ -219,9 +231,6 @@ int main() {
     cout << "\n\nSTARTING STACK SIMULATOR\nSTACK CONTENT:\n\nBOTTOM <--> TOP"; ;
     while(user_mode) { 
         Text currentText = loadMem(PC + text_addr);
-        //PC++;
-        //Text currentText;
-        //currentText.instruction = 4;
         switch ((int) currentText.instruction) { 
             // PUSH
             case 1: 

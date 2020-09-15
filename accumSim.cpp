@@ -1,3 +1,7 @@
+/* Referenced http://www.cplusplus.com/reference/fstream/ofstream/open/ 
+   for instructions on how to clear text file. 
+   Reflected in the printResults() method and commented accordingly. */
+
 #include<iostream>
 #include<fstream>
 #include<string>
@@ -182,15 +186,23 @@ Data assignData(string address) {
 
 // print results
 void printResults() { 
+    std::ofstream ofs;
+    ofs.open ("accumOutput.txt", std::ofstream::out | std::ofstream::trunc); // line referenced from source
     for (int i = 0; i < 6; i++) {
-        cout << "\n" << data_segment[i].operand << " " << (int) data_segment[i].content - 48;
+        if (i != 0) {
+            ofs << "\n" << data_segment[i].operand << " " << (int) data_segment[i].content - 48;
+        }
+        else { 
+            ofs << data_segment[i].operand << " " << (int) data_segment[i].content - 48;
+        }
+        cout << "\n" << data_segment[i].operand << " " << (int) data_segment[i].content - 48;  
     }
+    ofs.close(); // line referenced from source
+    cout << "\n\nRESULTS WRITTEN TO accumOutput.txt";
 }
 
 int main() { 
-
     int accum;
-    
     cout << "\nREADING accumCode.txt" << "\nFILE CONTENT:\n";
     storeAccum();
     cout << "\n\nSUCCESSFUL READ";
@@ -199,8 +211,6 @@ int main() {
     bool user_mode = true;
     text_addr = 0x00000010;
 	Data currentData;
- 
-
     cout << "\n\nSTARTING ACCUM SIMULATOR\n" ;
     while(user_mode) { 
         Text currentText = loadMem(PC + text_addr);
@@ -218,6 +228,7 @@ int main() {
                 // initialize sum
 				int32 sum;
 				sum = 0;
+                // find data associated with text operand
                 currentData = assignData(currentText.operand);
                 sum = sum + currentData.content - 48 + accum;
                 accum = sum;
@@ -225,7 +236,8 @@ int main() {
                 break;
             // MULT
             case 3: 
-				int32 product; // initialize product
+                // initialize product
+				int32 product; 
 				product = 0;
                 currentData = assignData(currentText.operand);
                 product = (currentData.content - 48) * accum;
@@ -249,6 +261,7 @@ int main() {
                 // find data associated with text operand
 				currentData = assignData(currentText.operand);
                 currentData.content = accum;
+                // write content to data_segment
                 data_segment[write_addr].content = currentData.content + 48;
                 cout << "\nSTO " << accum;
                 user_mode = true; 
