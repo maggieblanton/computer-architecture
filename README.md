@@ -21,4 +21,11 @@ Instructions to compile and run on Linux machine:
  
   Compiling with 'g++ stackSim.cop' or 'g++ accumSim.cpp' results in a "'to-string' is not a member of 'std' error. 
   Fixed by specifying C++ version of 11 with command 'g++ -std=c++11...'. 
+  
+  Upon completion, stackSim.cpp and accumSim.cpp both ran without errors in VS Code, but threw a 'Segmentation fault
+  (core dumped)' error while running on the tux machines. To fix this, the switch statement in the main methods of each 
+  had to be changed. The POP/STO commands were made the default, and invalid arguments were handled with an 
+  additional switch statement. 
+ 
+  
 
