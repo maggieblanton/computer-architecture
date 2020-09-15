@@ -24,7 +24,7 @@ Instructions to compile and run on Linux machine:
   
   Upon completion, stackSim.cpp and accumSim.cpp both ran without errors in VS Code, but threw a 'Segmentation fault
   (core dumped)' error while running on the tux machines. To fix this, the switch statement in the main methods of each 
-  had to be changed. The POP/STO commands were made the default, and invalid arguments were handled with an 
+  had to be changed. The POP/STO commands were made the default and invalid arguments were handled with an 
   additional switch statement. 
  
   
