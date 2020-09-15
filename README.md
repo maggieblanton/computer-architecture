@@ -17,6 +17,8 @@ Instructions to compile and run on Linux machine:
   6. Run stackSim: ./stackSim
   7. Run accumSim: ./accumSim
   
+ To view output, open stackOutput.txt and accumOutput.txt after running the simulators. Output is also printed in the terminal. 
+  
  Problems during development: 
  
   Compiling with 'g++ stackSim.cop' or 'g++ accumSim.cpp' results in a "'to-string' is not a member of 'std' error. 
