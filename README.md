@@ -3,19 +3,20 @@
 Maggie Blanton, mab0146
 
 Project Overview: 
+  
   Program reads ASCII file consisting of .data and .text. Parses accordingly and stores in memory. 
   The stack-based simulator uses PUSH, POP, ADD, MULT, and END commands to replicate quadratic evaluator functionality. 
   The accumulator-based simulator uses LOAD, STO, ADD, MULT, and END commnds to replicate quadratic evaluator functionality.
 
 Instructions to compile and run on Linux machine:
 
-  1. Download project1.tar.gz.
-  2. Decompress downloaded tarball. 
-  3. Change directory to downloaded folder. 
-  4. Compile stackSim: g++ -std=c++11 stackSim.cpp -o stackSim
-  5. Compile accumSim, run: g++ -std=c++11 accumSim.cpp -o accumSim
-  6. Run stackSim: ./stackSim
-  7. Run accumSim: ./accumSim
+    1. Download project1.tar.gz.
+    2. Decompress downloaded tarball. 
+    3. Change directory to downloaded folder. 
+    4. Compile stackSim: g++ -std=c++11 stackSim.cpp -o stackSim
+    5. Compile accumSim, run: g++ -std=c++11 accumSim.cpp -o accumSim
+    6. Run stackSim: ./stackSim
+    7. Run accumSim: ./accumSim
   
  To view output, open stackOutput.txt and accumOutput.txt after running the simulators. Output is also printed in the terminal. 
   
