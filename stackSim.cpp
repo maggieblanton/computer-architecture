@@ -12,28 +12,36 @@
 
 using namespace std;
 
-typedef unsigned int int32;  
+typedef unsigned int int32; 
+typedef int32 mem_addr; 
+
+// initialize variables
+#define SEGMENT_SIZE 50
+#define STACK_SIZE 50
+#define BUFFER_SIZE 20
+#define DATA_BASE_ADDR 0x00000000
+#define TEXT_BASE_ADDR 0x00000010
 
 // define data type for .data
 typedef struct data { 
-    int32 addr;
+    mem_addr addr;
     std::string operand;
-    int32 content;
+    mem_addr content;
 } Data;
 
 // define data type for .text
 typedef struct text { 
-    int32 addr;
-    int32 instruction; 
+    mem_addr addr;
+    mem_addr instruction; 
     std::string operand;
 } Text;
 
 // initialize arrays
-Text text_segment[50];
-Data data_segment[50];
-Data stack[100];
-char data_mem[20];
-char text_mem[20];
+Text text_segment[SEGMENT_SIZE];
+Data data_segment[SEGMENT_SIZE];
+Data stack[STACK_SIZE];
+char data_mem[BUFFER_SIZE];
+char text_mem[BUFFER_SIZE];
 
 // declare string variables
 std::string line;
@@ -41,12 +49,12 @@ std::string cmp;
 std::string type; 
 
 // set starting addresses
-int32 data_addr = 0x00000000;
-int32 text_addr = 0x00000010;
+mem_addr data_addr = DATA_BASE_ADDR;
+mem_addr text_addr = TEXT_BASE_ADDR;
 
 // initialze indexes
-int32 data_index = 0;
-int32 text_index = 0;
+mem_addr data_index = 0;
+mem_addr text_index = 0;
 
 // declare write address
 int write_addr;
@@ -218,7 +226,7 @@ int main() {
     int PC = 0;
     bool user_mode = true;
     // reset text_addr
-    text_addr = 0x00000010;
+    text_addr = TEXT_BASE_ADDR;
     // declare currentData
 	Data currentData;
     // set stack index to -1
