@@ -56,6 +56,9 @@ mem_addr text_addr = TEXT_BASE_ADDR;
 mem_addr data_index = 0;
 mem_addr text_index = 0;
 
+// initialize line count
+int line_count = 0;
+
 // declare write address
 mem_addr write_addr;
 
@@ -118,6 +121,7 @@ void storeAccum() {
                     data_segment[data_index].operand = placeholder;
                     data_segment[data_index].content = data_mem[11];
                     data_index++;
+                    line_count++;
                 }
             }
             // add line to text_segment
@@ -196,7 +200,7 @@ Data assignData(string address) {
 void printResults() { 
     std::ofstream ofs;
     ofs.open ("accumOutput.txt", std::ofstream::out | std::ofstream::trunc); // line referenced from source
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < line_count; i++) {
         if (i != 0) {
             ofs << "\n" << data_segment[i].operand << " " << (int) data_segment[i].content - 48;
         }

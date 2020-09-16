@@ -59,6 +59,9 @@ mem_addr text_index = 0;
 // declare write address
 int write_addr;
 
+// initialize line count
+int line_count = 0;
+
 // determine line type
 void typeCheck(string line) { 
     if (line.compare(".data") == 0) {
@@ -118,6 +121,7 @@ void storeStck() {
                     data_segment[data_index].operand = placeholder;
                     data_segment[data_index].content = data_mem[11];
                     data_index++;
+                    line_count++;
                 }
             }
             // add line to text_segment
@@ -204,7 +208,7 @@ void printStck() {
 void printResults() { 
     std::ofstream ofs;
     ofs.open ("stackOutput.txt", std::ofstream::out | std::ofstream::trunc); // line referenced from source
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < line_count; i++) {
         if (i != 0) {
             ofs << "\n" << data_segment[i].operand << " " << (int) data_segment[i].content - 48;
         }
