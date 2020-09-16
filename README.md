@@ -18,7 +18,7 @@ Instructions to compile and run on Linux machine:
     6. Run stackSim: ./stackSim
     7. Run accumSim: ./accumSim
   
-  To view output: 
+  Instructions to view output: 
   
     1. Open the stackOutput.txt file created.
     2. Open the accumOutput.txt file created.
