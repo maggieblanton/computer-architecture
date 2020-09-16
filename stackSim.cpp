@@ -52,7 +52,7 @@ std::string type;
 mem_addr data_addr = DATA_BASE_ADDR;
 mem_addr text_addr = TEXT_BASE_ADDR;
 
-// initialze indexes
+// initialize indexes
 mem_addr data_index = 0;
 mem_addr text_index = 0;
 
