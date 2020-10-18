@@ -170,6 +170,7 @@ void storeAccum() {
                     string placeholder = "";
                     text_segment[text_index].addr = text_addr;
                     text_addr++;
+                    //cout << "\nADDRESS: " << text_segment[text_index].addr;
                     std::copy(line.begin(), line.end(), text_mem); 
                     cmp = text_mem[0];
                     if (cmp.compare("l") == 0) { 
@@ -205,7 +206,7 @@ void storeAccum() {
                                  index++;
                             }
                             text_segment[text_index].instruction = assignInstruction(placeholder);
-                            cout << "\nINSTRUCTION IS " << text_segment[text_index].instruction;
+                            //cout << "\nINSTRUCTION IS " << text_segment[text_index].instruction;
                             index = 0;
                             placeholder = "";
                             while (index < 7) {
@@ -214,8 +215,8 @@ void storeAccum() {
                              }
                             trim(placeholder);
                             text_segment[text_index].operand = placeholder;
-                            cout << "\nOPERAND IS " << text_segment[text_index].operand;
-                            cout << "\nADDRESS IS " << text_segment[text_index].addr;
+                            //cout << "\nOPERAND IS " << text_segment[text_index].operand;
+                            //cout << "\nADDRESS IS " << text_segment[text_index].addr;
                         }
                     }
                     else if (cmp.compare("b") == 0) {
@@ -263,9 +264,9 @@ void storeAccum() {
                             text_segment[text_index].operand = placeholder;
                             //cout << "\nOPERAND IS " << text_segment[text_index].operand;
                         }
-                    text_index++;
 
                     }
+                    text_index++;
                 }
             }
             // print line
@@ -277,7 +278,6 @@ void storeAccum() {
 
 // load currentText 
 Text loadMem(int32 address) {
-    cout << "\nADDRESS: " << address;
     for(int i = 0; i < sizeof(text_segment) + 1; i++) {
 		if (std::to_string(text_segment[i].addr).compare(std::to_string(address)) == 0) {
     		return text_segment[i];
@@ -315,7 +315,6 @@ void printResults() {
 }
 
 int main() { 
-    int accum;
     cout << "\nREADING palindrome.s" << "\nFILE CONTENT:\n";
     storeAccum();
     cout << "\n\nSUCCESSFUL READ";
@@ -327,37 +326,46 @@ int main() {
     text_addr = TEXT_BASE_ADDR;
 	Data currentData;
     cout << "\n\nSTARTING SIMULATOR\n" ;
-    // while(user_mode) { 
-    //     Text currentText = loadMem(PC + text_addr);
-    //     cout << "\nINSTRUCTION " << currentText.instruction;
-    //     //switch ((int) currentText.instruction) { 
-    //     //switch ((int) text_mem[0]) { 
-    //         // LOAD
-    //         case 1: 
-    //             cout << "addi";
-    //         case 2: 
-    //             cout << "b";
-    //         case 3: 
-    //             cout << "beqz";
-    //         case 4: 
-    //             cout << "bge";
-    //         case 5: 
-    //             cout << "bne";
-    //         // STO
-    //         default: 
-    //             // find data associated with text operand
-	// 			//currentData = assignData(currentText.operand);
-    //             //currentData.content = accum;
-    //             // write content to data_segment
-    //             //data_segment[write_addr].content = currentData.content + 48;
-    //             //cout << "\nSTO " << accum;
-    //             user_mode = true; 
-    //     }
-    //     PC++;
+    while(user_mode) { 
+        Text currentText = loadMem(PC + text_addr);
+        cout << "\nINSTRUCTION " << text_segment[PC].operand;
+        switch ((int) currentText.instruction) { 
+            // addi
+            case 1: 
+                cout << "\naddi";
+            case 2: 
+                cout << "\nb";
+            case 3: 
+                cout << "\nbeqz";
+            case 4: 
+                cout << "\nbge";
+            case 5: 
+                cout << "\nbne";
+            case 6: 
+                cout << "\nla";
+            case 7:
+                cout << "\nlb";
+            case 8: 
+                cout << "\nli";
+            case 9: 
+                cout << "\nsubi";
+            case 10: 
+                cout << "\nsyscall";
+            default: 
+                // find data associated with text operand
+				//currentData = assignData(currentText.operand);
+                //currentData.content = accum;
+                // write content to data_segment
+                //data_segment[write_addr].content = currentData.content + 48;
+                //cout << "\nSTO " << accum;
+                user_mode = false; 
+        }
+        PC++;
+    }
 
     
 
-    cout << "\n\nSIMULATION COMPLETE\n\nRESULT:\n" << accum << "\n";
+    cout << "\n\nSIMULATION COMPLETE\n\nRESULT:\n" << "add result here" << "\n";
     //printResults();
     cout << "\n\nEXITING PROGRAM\n";
     return 0;
