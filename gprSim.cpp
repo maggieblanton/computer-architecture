@@ -158,8 +158,8 @@ void storeAccum() {
     cout << "\nTYPE PALINDROME TEST STRING: ";
     cin >> palindrome;
     stringArr[0] = palindrome;
-    stringArr[1] = "This is a palindrome";
-    stringArr[2] = "This is not a palindrome";
+    stringArr[1] = "This is a palindrome.";
+    stringArr[2] = "This is not a palindrome.";
 
     //open accumCode.txt 
     accumCode.open("palindrome.s", ios::in);
@@ -360,9 +360,9 @@ Data loadData(string operand) {
 }
 
 // print results
-void printResults() { 
+void printResults(int ) { 
     std::ofstream ofs;
-    ofs.open ("accumOutput.txt", std::ofstream::out | std::ofstream::trunc); // line referenced from source
+    ofs.open ("result.txt", std::ofstream::out | std::ofstream::trunc); // line referenced from source
     for (int i = 0; i < line_count; i++) {
         if (i != 0) {
             ofs << "\n" << data_segment[i].operand << " " << data_segment[i].content;
@@ -373,7 +373,7 @@ void printResults() {
         cout << "\n" << data_segment[i].operand << " " << data_segment[i].content;  
     }
     ofs.close(); // line referenced from source
-    cout << "\n\nRESULTS WRITTEN TO accumOutput.txt";
+    cout << "\n\nRESULT WRITTEN TO result.txt";
 }
 
 int main() { 
@@ -382,6 +382,7 @@ int main() {
     cout << "\n\nSUCCESSFUL READ";
     // initialize program counter
     string operand;
+    float speedup;
     Instruction currentInstruction;
     Data currentData;
     string placeholder;
@@ -559,12 +560,22 @@ int main() {
             case 10: 
                 cout << "\nsyscall";
                 service_num = register_mem[29];
-                cout << " service num " << service_num;
+                //cout << " service num " << service_num;
                 if (service_num == 1) {
                     cout << "\n" << stringArr[register_mem[31]];
                 }
                 if (service_num == 2) {
                     cout << "\n\nSIMULATION COMPLETE\n\nC: " << C << "\nIC: " << IC;
+                    std::ofstream ofs;
+                    ofs.open ("result.txt", std::ofstream::out | std::ofstream::trunc);
+                    ofs << stringArr[0];
+                    ofs << "\n-----------------";
+                    ofs << "\nC: " << C << "\nIC: " << IC;
+                    speedup = 8 * (float) IC / (float) C;
+                    ofs << "\nSpeedup: " << speedup;
+                    ofs << "\n\n" << stringArr[register_mem[31]];
+                    ofs.close();
+
                     cout << "\n\nEXITING PROGRAM\n";
                     exit (EXIT_FAILURE);
                 }
