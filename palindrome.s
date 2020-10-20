@@ -1,11 +1,11 @@
 .data
+string_space: .space 1024
 is_palin_msg: .asciiz "The string is a palindrome."
 not_palin_msg: .asciiz "The string is not a palindrome."
-string_space: .space 1024
 
 .text
 main:
-la $30, is_palin_msg
+la $30, string_space
 li $31, 1024
 li $29, 8
 syscall
@@ -15,7 +15,7 @@ length_loop:
 lb $3, ($2)
 beqz $3, test_loop
 addi $2, $2, 1
-b exit
+b length_loop
 end_length_loop:
 subi $2, $2, 2
 test_loop:

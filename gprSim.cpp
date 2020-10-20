@@ -50,6 +50,7 @@ typedef struct instr {
     std::string name;
 } Instruction;
 
+string strings[UNIQUE_STRING];
 
 // initialize arrays
 Text text_segment[SEGMENT_SIZE];
@@ -469,10 +470,12 @@ int main() {
     string jump;
     std::size_t msg_1;
     std::size_t msg_2;
+    std::size_t msg_3;
     Data currentData;
     int32 service_num;
     int32 arg1;
     int32 arg2;
+    int laVal = 0;
     int PC = 0;
     int size = 0;
     int IC = 0;
@@ -485,6 +488,14 @@ int main() {
     bool user_mode = true;
     text_addr = TEXT_BASE_ADDR;
     cout << "\n\nSTARTING SIMULATOR\n" ;
+
+    cout << "TYPE TEST STRING: ";
+    cin >> palindrome;
+    strings[0] = palindrome;
+    strings[1] = "This is a palindrome";
+    strings[2] = "This is not a palindrome";
+
+
     while(user_mode) { 
         Text currentText = loadMem(PC + text_addr);
         //cout << "\nADDRESS " << currentText.addr;
@@ -503,7 +514,7 @@ int main() {
                 imm = currentText.operand[8] - 48;
                 src = std::stoi(operand);
                 register_mem[dest] = register_mem[src] + imm;
-                //cout << " " << dest << " " << src << " " << imm;
+                //cout << " dest " << dest << " src " << src << " imm " << imm;
                 C += 6;
                 IC++;
                 break;
@@ -512,7 +523,7 @@ int main() {
                 cout << "\nb " << currentText.operand;
                 currentInstruction = loadInstr(currentText.operand);
                 offset = currentInstruction.offset;
-                //cout << "OFFSET " << offset; 
+                cout << " OFFSET " << offset; 
                 PC = offset - 1;
                 C += 4;
                 IC++;
@@ -530,11 +541,11 @@ int main() {
                 jump = operand.substr(0, operand.find("\r"));
                 currentInstruction = loadInstr(jump);
                 offset = currentInstruction.offset;
-                //cout << " " << src << " JUMP " << offset;
+                cout << " " << src << " JUMP " << offset;
                 //cout << "OFFSET " << offset; 
                 dest = register_mem[src];
                 if (dest == 0) {
-                    PC = offset - 1;
+                   PC = offset - 1;
                 }
             
                 break;
@@ -556,7 +567,7 @@ int main() {
                 operand = operand.substr(0, operand.find(",")), 0, 0;
                 //operand.erase(std::remove(operand.begin(), operand.end(), 't'), operand.end());
                 src2 = std::stoi(operand);
-                register_mem[dest] = register_mem[src] + imm;
+                //register_mem[dest] = register_mem[src] + imm;
                 //operand = currentText.operand;
                 //cout << "src " << src << "src2 " << src2 << "offset " << offset;
                 currentInstruction = loadInstr(jump);
@@ -564,8 +575,6 @@ int main() {
                 //cout << "jump " << offset;
                 dest = register_mem[src];
                 imm = register_mem[src2];
-                dest = 1;
-                imm = 2;
                 if (dest >= imm) {
                     PC = offset - 1;
                 }
@@ -590,7 +599,7 @@ int main() {
                 operand = operand.substr(0, operand.find(",")), 0, 0;
                 //operand.erase(std::remove(operand.begin(), operand.end(), 't'), operand.end());
                 src2 = std::stoi(operand);
-                register_mem[dest] = register_mem[src] + imm;
+                //register_mem[dest] = register_mem[src] + imm;
                 //operand = currentText.operand;
                 //cout << "src " << src << "src2 " << src2 << "offset " << offset;
                 currentInstruction = loadInstr(jump);
@@ -615,20 +624,23 @@ int main() {
                 operand = currentText.operand;
                 msg_1 = operand.find("is_palin_msg");
                 msg_2 = operand.find("not_palin_msg");
+                msg_3 = operand.find("string_space");
                 if (msg_1 != std::string::npos) {
                     operand = "is_palin_msg";
-                    currentData = loadData(operand);
-                    register_mem[dest] = currentData.addr;
+                    //currentData = loadData(operand);
+                    register_mem[dest] = 1;
+                    //register_mem[dest] = currentData.addr;
                 }
                 else if (msg_2 != std::string::npos) {
                     operand = "not_palin_msg";
-                    currentData = loadData(operand);
-                    register_mem[dest] = currentData.addr;
+                    register_mem[dest] = 2;
+                    //register_mem[dest] = currentData.addr;
                 }
-                else {
+                else if (msg_3 != std::string::npos) {
                     operand = "string_space";
-                    currentData = loadData(operand);
-                    register_mem[dest] = currentData.addr;
+                    register_mem[dest] = laVal;
+                    //register_mem[dest] = 0;
+                    //register_mem[dest] = currentData.addr;
                 }
                 
                 C += 5;
@@ -645,9 +657,7 @@ int main() {
                 operand = operand.substr(0, operand.find(")")), 0, 0;
                 //operand.erase(std::remove(operand.begin(), operand.end(), 't'), operand.end());
                 src = std::stoi(operand);
-                // TODO: Fix this
-                data_index = register_mem[src];
-                cout << "Data_index " << data_index;
+                register_mem[dest] = strings[0][register_mem[src]];
                 C += 6;
                 IC++;
                 break;
@@ -662,13 +672,13 @@ int main() {
                 operand = operand.substr(operand.find(" ") + 1);
                 operand = operand.substr(0, operand.find("\r")), 0, 0;
                 imm = std::stoi(operand);
-                cout << " dest " << dest << " imm " << imm;
+                //cout << " dest " << dest << " imm " << imm;
                 register_mem[dest] = imm;
                 C += 3;
                 IC++;
                 break;
             case 9: 
-               cout << "\nsubi " << currentText.operand;
+                cout << "\nsubi " << currentText.operand;
                 operand = currentText.operand;
                 operand = operand.substr(operand.find("$") + 1);
                 operand = operand.substr(0, operand.find(",")), 0, 0;
@@ -679,7 +689,7 @@ int main() {
                 //operand.erase(std::remove(operand.begin(), operand.end(), 't'), operand.end());
                 imm = currentText.operand[8] - 48;
                 src = std::stoi(operand);
-                register_mem[dest] = register_mem[src] + imm;
+                register_mem[dest] = register_mem[src] - imm;
                 //cout << " " << dest << " " << src << " " << imm;
                 C += 6;
                 IC++;
@@ -690,15 +700,8 @@ int main() {
                 arg1 = register_mem[30];
                 arg2 = register_mem[31];
 
-                if (service_num == 8) {
-                    cout << "\n\nTYPE TEST STRING: ";
-                    cin >> palindrome;
-                    data_addr = register_mem[30];
-                    size = register_mem[31];
-                    data_segment[0].content = palindrome;
-                }
-                if (service_num == 4) {
-                    cout << "Print message here";
+                if (service_num == 1) {
+                    cout << "%s\n", strings[register_mem[31]];
                 }
                 C += 8;
                 IC++;
