@@ -22,7 +22,6 @@ typedef int32 mem_addr;
 
 // initialize size variables
 #define SEGMENT_SIZE 50
-#define STACK_SIZE 50
 #define BUFFER_SIZE 50
 #define DATA_BASE_ADDR 0x00000000
 #define TEXT_BASE_ADDR 0x00000010
@@ -44,18 +43,9 @@ typedef struct text {
     std::string operand;
 } Text;
 
-// define data type for .text
-typedef struct instr { 
-    int offset;
-    std::string name;
-} Instruction;
-
-
 // initialize arrays
 Text text_segment[SEGMENT_SIZE];
 Data data_segment[SEGMENT_SIZE];
-Data stack[STACK_SIZE];
-Instruction instr_segment[INSTR_NUM];
 char data_mem[BUFFER_SIZE];
 char text_mem[BUFFER_SIZE];
 int register_mem[REGISTER_NUM];
@@ -73,15 +63,12 @@ mem_addr text_addr = TEXT_BASE_ADDR;
 // initialze indexes
 mem_addr data_index = 0;
 mem_addr text_index = 0;
-mem_addr instr_index = 0;
 
 // initialize line count
 int line_count = 0;
 
 // declare write address
 mem_addr write_addr;
-
-
 
 // determine line type
 void typeCheck(string line) { 
@@ -150,15 +137,14 @@ void clearMem() {
 // read and store text file 
 void storeAccum() { 
     int val = 0;
-    string palindrome;
+    char palindrome[256];
     fstream accumCode;
     int index;
     int offset = 0;
     cout << "\nTYPE PALINDROME TEST STRING: ";
-    cin >> palindrome;
+    std::cin.getline(palindrome, 256);
     cout << "\nREADING palindrome.s";
     cout << "\nFILE CONTENT: " << "\n";
-
     //open accumCode.txt 
     accumCode.open("palindrome.s", ios::in);
     // read accumCode.txt
@@ -167,7 +153,6 @@ void storeAccum() {
         while(getline(accumCode, line)) { 
             // determine line type
             typeCheck(line);
-            
             // add line to data_segment
              if (type.compare("data") == 0) { 
                 if (line.compare(".data") != 0 && !line.empty()) { 
@@ -198,7 +183,6 @@ void storeAccum() {
                         }
                         stringArr[2] = placeholder;
                     }
-
                     data_index++;
                     line_count++;
                 }
@@ -207,7 +191,6 @@ void storeAccum() {
             // add line to text_segment
             else if (type.compare("text") == 0) { 
                 if (line.compare(".text") != 0 && !line.empty()) { 
-                    //cout << " line " << line;
                     if (line.compare("main:") != 0 && line.compare("length_loop:") != 0 && line.compare("end_length_loop:") != 0
                     && line.compare("test_loop:") != 0 && line.compare("is_palin:") != 0 && line.compare("not_palin:") != 0
                     && line.compare("exit:") != 0) {
@@ -218,7 +201,6 @@ void storeAccum() {
                     text_addr++;
                     std::copy(line.begin(), line.end(), text_mem); 
                     cmp = text_mem[0];
-                    //cout << " CMP: " << cmp;
                     if (cmp.compare("l") == 0) {
                         while (index < 2) {
                             placeholder = placeholder + text_mem[index];
@@ -228,8 +210,12 @@ void storeAccum() {
                         index = 0;
                         placeholder = "";
                         std::size_t msg_1 = line.find("1024");
+                        std::size_t msg_2 = line.find("10");
                         if (msg_1 != std::string::npos) {
                             placeholder = "$31 1024";
+                        }
+                        else if (msg_2 != std::string::npos) {
+                            placeholder = "$29 10";
                         }
                         else if (line.length() == 8) {
                             while (index < 5) {
@@ -244,14 +230,12 @@ void storeAccum() {
                             }
                         }
                         text_segment[text_index].operand = placeholder;
-                        //cout << " OP: " << placeholder;
                     }
                     else if (cmp.compare("s") == 0 || cmp.compare("a") == 0 ) {
                         cmp = text_mem[1];
                         if (cmp.compare("y") == 0) {
                             placeholder = "syscall";
                             text_segment[text_index].instruction = assignInstruction(placeholder);
-                            //cout << " INSTR: " << text_segment[text_index].instruction;
                         }
                         else { 
                             while (index < 4) {
@@ -259,7 +243,6 @@ void storeAccum() {
                                 index++;
                             }
                             text_segment[text_index].instruction = assignInstruction(placeholder);
-                            //cout << " INSTR: " << text_segment[text_index].instruction;
                             index = 0;
                             placeholder = "";
                             while (index < 7) {
@@ -267,9 +250,6 @@ void storeAccum() {
                                 index++;
                             }
                             text_segment[text_index].operand = placeholder;
-                            //cout << " OP: " << placeholder;
-                        
-                        //text_segment[text_index].instruction = assignInstruction(placeholder);
                         }
                     }
                     else if (cmp.compare("b") == 0) {
@@ -277,7 +257,6 @@ void storeAccum() {
                         if (cmp.compare(" ") == 0) {
                             placeholder = "b";
                             text_segment[text_index].instruction = assignInstruction(placeholder);
-                            //cout << " INSTR: " << text_segment[text_index].instruction;
                             cmp = text_mem[2];
                             placeholder = "";
                             if (cmp.compare("-") == 0) {
@@ -291,19 +270,16 @@ void storeAccum() {
                                placeholder = text_mem[2]; 
                             }
                             text_segment[text_index].operand = placeholder;
-                            //cout << " PLACEHOLDER " << placeholder;
                         }
                         else if (cmp.compare("e") == 0) {
                             placeholder = "beqz";
                             text_segment[text_index].instruction = assignInstruction(placeholder);
-                            //cout << " INSTR: " << text_segment[text_index].instruction;
                             placeholder = "";
                             while (index < 4) {
                                 placeholder = placeholder + text_mem[index + 5];
                                 index++;
                             }
                             text_segment[text_index].operand = placeholder;
-                            //cout << " PLACEHOLDER " << placeholder;
                         }
                          else if (cmp.compare("n") == 0 || cmp.compare("g") == 0) {
                             if (cmp.compare("n") == 0) { 
@@ -313,19 +289,15 @@ void storeAccum() {
                                 placeholder = "bge";
                             }
                             text_segment[text_index].instruction = assignInstruction(placeholder);
-                            //cout << " INSTR: " << text_segment[text_index].instruction;
                             placeholder = "";
                             while (index < 7) {
                                 placeholder = placeholder + text_mem[index + 4];
                                 index++;
                             }
                             text_segment[text_index].operand = placeholder;
-                            //cout << " PLACEHOLDER " << placeholder; 
                         }
                     }
-                        
-
-                    }
+                }
                     text_index++;
                     offset++;
                 }
@@ -334,7 +306,6 @@ void storeAccum() {
             cout<<"\n" << line;
         }
     }
-
 }
 
 // load currentText 
@@ -342,30 +313,6 @@ Text loadMem(int32 address) {
     for(int i = 0; i < sizeof(text_segment) + 1; i++) {
 		if (std::to_string(text_segment[i].addr).compare(std::to_string(address)) == 0) {
     		return text_segment[i];
-        }
-    }
-    exit (EXIT_FAILURE);
-}
-
-
-Instruction loadInstr(string operand) {
-    //trim(operand);
-    //cout << operand;
-    for(int i = 0; i < 7; i++) {
-        if (instr_segment[i].name.compare(operand) == 0) {
-    		return instr_segment[i];
-        }
-    }
-    exit (EXIT_FAILURE);
-}
-
-Data loadData(string operand) {
-    //trim(operand);
-    //cout << operand;
-    for(int i = 0; i < 3; i++) {
-        //cout << "OP " << data_segment[i].operand;
-        if (data_segment[i].operand.compare(operand) == 0) {
-    		return data_segment[i];
         }
     }
     exit (EXIT_FAILURE);
@@ -391,33 +338,32 @@ void printResults(int ) {
 int main() {
     storeAccum();
     cout << "\n\nSUCCESSFUL READ";
-    // initialize program counter
-    string operand;
     std::size_t msg_1;
-    float speedup;
-    Instruction currentInstruction;
-    Data currentData;
+    // initialize string variables
+    string operand;
     string placeholder;
     string result;
-    int32 service_num;
-    int32 arg1;
-    int32 arg2;
+    // intialize int variables
     int PC = 0;
     int IC = 0;
     int C = 0;
     int test = 0;
-    int32 label = 0;
-    int32 rdest = 0;
-    int32 rsrc1 = 0;
-    int32 rsrc2 = 0;
-    int32 offset = 0;
-    int32 imm = 0;
+    // initialize speedup
+    float speedup;
+    // initialize int32 variables
+    mem_addr label = 0;
+    mem_addr dest = 0;
+    mem_addr src1 = 0;
+    mem_addr src2 = 0;
+    mem_addr offset = 0;
+    mem_addr imm = 0;
+    // initialize boolean to enter while loop
     bool user_mode = true;
+    // set base addr
     text_addr = TEXT_BASE_ADDR;
     cout << "\n\nSTARTING SIMULATOR\n" ;
     while(user_mode) { 
         Text currentText = loadMem(PC + text_addr);
-        //cout << "\nADDRESS " << currentText.addr;
         switch ((int) currentText.instruction) { 
             // addi
             case 1: 
@@ -425,115 +371,104 @@ int main() {
                 operand = currentText.operand;
                 operand = operand.substr(operand.find("$") + 1);
                 operand = operand.substr(0, operand.find(",")), 0, 0;
-                rdest = std::stoi(operand);
+                dest = std::stoi(operand);
                 operand = operand.substr(operand.find("$") + 1);
                 operand = operand.substr(0, operand.find(",")), 0, 0;
-                rsrc1 = std::stoi(operand);
+                src1 = std::stoi(operand);
                 operand = currentText.operand[6];
                 imm = std::stoi(operand);
-                //cout << " rdest " << rdest << " rsrc1 " << rsrc1 << " imm " << imm;
-                register_mem[rdest] = register_mem[rsrc1] + imm;
+                register_mem[dest] = register_mem[src1] + imm;
                 C += 6;
                 IC++;
                 break;
             // b
             case 2: 
                 cout << "\nb " << currentText.operand;
-
-                //cout << " curr text " << currentText.operand;
-                //label = (int32) currentText.operand;
                 cmp = currentText.operand[0];
-                //cout << " cmp " << cmp;
                 if (cmp.compare("-") == 0) {
                     operand = currentText.operand[1];
                     test = std::stoi(operand);
                     test = test * -1;
-                    //label = test;
-                    //cout << " op " << test;
                 }
                 else {
                     operand = currentText.operand[0];
                     test = std::stoi(operand);
-                    //cout << " op " << test;
                 }
                 PC += test;
                 C += 4;
                 IC++;
                 break;
+            // beqz
             case 3: 
                 cout << "\nbeqz " << currentText.operand;
                 operand = currentText.operand[1];
-                rsrc1 = std::stoi(operand);
+                src1 = std::stoi(operand);
                 operand = currentText.operand[3];
                 test = std::stoi(operand);
-                //cout << " rsrc1 " << rsrc1 << " label " << test;
-                if (register_mem[rsrc1] == 0) {
+                if (register_mem[src1] == 0) {
                     PC += test;
                 }
-
                 C += 5;
                 IC++;
                 break;
+            // bge
             case 4: 
                 cout << "\nbge " << currentText.operand; 
                 operand = currentText.operand[1];
-                rsrc1 = std::stoi(operand);
+                src1 = std::stoi(operand);
                 operand = currentText.operand[4];
-                rsrc2 = std::stoi(operand);
+                src2 = std::stoi(operand);
                 operand = currentText.operand[6];
                 test = std::stoi(operand);
-                //cout << " rsrc1 " << rsrc1 << " rsrc2 " << rsrc2 << " label " << test;
-                if (register_mem[rsrc1] >= register_mem[rsrc2]) {
+                if (register_mem[src1] >= register_mem[src2]) {
                     PC += test;
                 }
                 C += 5;
                 IC++;
                 break;
+            // bne
             case 5: 
                 cout << "\nbne " << currentText.operand;
                 operand = currentText.operand[1];
-                rsrc1 = std::stoi(operand);
+                src1 = std::stoi(operand);
                 operand = currentText.operand[4];
-                rsrc2 = std::stoi(operand);
+                src2 = std::stoi(operand);
                 operand = currentText.operand[6];
                 test = std::stoi(operand);
-                //cout << " rsrc1 " << rsrc1 << " rsrc2 " << rsrc2 << " label " << test;
-                if (register_mem[rsrc1] != register_mem[rsrc2]) {
+                if (register_mem[src1] != register_mem[src2]) {
                     PC += test;
                 }
                 C += 5;
                 IC++;
                 break;
+            // la
             case 6: 
                 cout << "\nla " << currentText.operand;
                 operand = currentText.operand;
                 operand = operand.substr(operand.find("$") + 1);
                 operand = operand.substr(0, operand.find(",")), 0, 0;
-                rdest = std::stoi(operand);
-                //cout << " place holder " << rdest;
+                dest = std::stoi(operand);
                 operand = currentText.operand[4];
                 label = std::stoi(operand);
-                //cout << " label " << label; 
-                register_mem[rdest] = label;
+                register_mem[dest] = label;
                 C += 5;
                 IC++;
                 break;
+            // lb
             case 7:
                 cout << "\nlb " << currentText.operand;
                 operand = currentText.operand;
                 operand = operand.substr(operand.find("$") + 1);
                 operand = operand.substr(0, operand.find(",")), 0, 0;
-                rdest = std::stoi(operand);
-                //cout << " place holder " << rdest;
+                dest = std::stoi(operand);
                 operand = operand.substr(operand.find("$") + 1);
                 operand = operand.substr(0, operand.find(",")), 0, 0;
                 offset = std::stoi(operand);
-                //cout << " off " << offset;
-                register_mem[rdest] = stringArr[0][register_mem[offset]];
-                //register_mem[rdest] = string
+                register_mem[dest] = stringArr[0][register_mem[offset]];
                 C += 6;
                 IC++;
                 break;
+            // li
             case 8: 
                 cout << "\nli " << currentText.operand;
                 operand = currentText.operand;
@@ -544,45 +479,47 @@ int main() {
                 operand = currentText.operand;
                 operand = operand.substr(operand.find("$") + 1);
                 operand = operand.substr(0, operand.find(",")), 0, 0;
-                rdest = std::stoi(operand);
-                //cout << " place holder " << rdest;
+                dest = std::stoi(operand);
                 cmp = currentText.operand[3];
-                if (cmp.compare(" ") == 0) {
-                    operand = currentText.operand[4];
+                msg_1 = operand.find("10");
+                if (msg_1 != std::string::npos) {
+                    placeholder = "10";
+                    imm = std::stoi(placeholder);
+                }
+                else if (cmp.compare(" ") == 0) {
+                    imm = currentText.operand[4] - 48;
                 }
                 else {
-                    operand = currentText.operand[3];
+                    imm = currentText.operand[3] - 48;
                 }
-                imm = std::stoi(operand);
-                //cout << " imm " << imm;
-                register_mem[rdest] = imm;
+                register_mem[dest] = imm;
                 C += 3;
                 IC++;
                 break;
+            // subi
             case 9: 
                 cout << "\nsubi " << currentText.operand;
                 operand = currentText.operand;
                 operand = operand.substr(operand.find("$") + 1);
                 operand = operand.substr(0, operand.find(",")), 0, 0;
-                rdest = std::stoi(operand);
+                dest = std::stoi(operand);
                 operand = operand.substr(operand.find("$") + 1);
                 operand = operand.substr(0, operand.find(",")), 0, 0;
-                rsrc1 = std::stoi(operand);
+                src1 = std::stoi(operand);
                 operand = currentText.operand[6];
                 imm = std::stoi(operand);
-                //cout << " rdest " << rdest << " rsrc1 " << rsrc1 << " imm " << imm;
-                register_mem[rdest] = register_mem[rsrc1] - imm;
+                register_mem[dest] = register_mem[src1] - imm;
                 C += 6;
                 IC++;
                 break;
+            // syscall
             case 10: 
                 cout << "\nsyscall";
-                service_num = register_mem[29];
-                //cout << " service num " << service_num;
-                if (service_num == 1) {
+                offset = register_mem[29];
+                if (offset == 1) {
                     result = stringArr[register_mem[31]];
                 }
-                if (service_num == 2) {
+                if (offset == 10) {
                     cout << "\n\nSIMULATION COMPLETE\n\nC: " << C << "\nIC: " << IC;
                     speedup = 8 * (float) IC / (float) C;
                     cout << "\nSPEEDUP: " << speedup << "\n\nRESULT: " << result;
@@ -594,11 +531,9 @@ int main() {
                     ofs << "\nSpeedup: " << speedup;
                     ofs << "\n\n" << result;
                     ofs.close();
-
                     cout << "\n\nEXITING PROGRAM\n";
                     exit (EXIT_FAILURE);
                 }
-                
                 C += 8;
                 IC++;
                 break;
@@ -608,6 +543,5 @@ int main() {
         }
         PC++;
     }
-
     return 0;
 }
