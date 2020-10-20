@@ -563,21 +563,21 @@ int main() {
                 if (service_num == 1) {
                     cout << "\n" << stringArr[register_mem[31]];
                 }
+                if (service_num == 2) {
+                    cout << "\n\nSIMULATION COMPLETE\n\nC: " << C << "\nIC: " << IC;
+                    cout << "\n\nEXITING PROGRAM\n";
+                    exit (EXIT_FAILURE);
+                }
                 
                 C += 8;
                 IC++;
                 break;
             default: 
-              
+                //cout << "\nSIMULATION COMPLETE";
                 user_mode = false; 
         }
         PC++;
     }
 
-    
-
-    cout << "\n\nSIMULATION COMPLETE\n\nRESULT:\n" << "add result here" << "\n";
-    //printResults();
-    cout << "\n\nEXITING PROGRAM\n";
     return 0;
 }
