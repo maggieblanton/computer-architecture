@@ -14,7 +14,7 @@ Instructions to compile and run on Linux machine:
     1. Download project2.tar.gz.
     2. Type 'tar -xvf project2.tar' to extract the file to the current directory.
     3. Change directory to downloaded folder. 
-    4. Compile stackSim: g++ -std=c++11 gprSim.cpp -o gprSim
+    4. Compile gprSim: g++ -std=c++11 gprSim.cpp -o gprSim
     5. Run gprSim: ./gprSim
     6. Type in a string for testing when prompted (ie. anna).
   
