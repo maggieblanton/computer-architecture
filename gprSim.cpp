@@ -149,17 +149,15 @@ void clearMem() {
 
 // read and store text file 
 void storeAccum() { 
+    int val = 0;
     string palindrome;
     fstream accumCode;
     int index;
     int offset = 0;
-    //string s1 = "racecar";
-    //char str1[] = "racecar";
     cout << "\nTYPE PALINDROME TEST STRING: ";
     cin >> palindrome;
-    stringArr[0] = palindrome;
-    stringArr[1] = "This is a palindrome.";
-    stringArr[2] = "This is not a palindrome.";
+    cout << "\nREADING palindrome.s";
+    cout << "\nFILE CONTENT: " << "\n";
 
     //open accumCode.txt 
     accumCode.open("palindrome.s", ios::in);
@@ -178,12 +176,29 @@ void storeAccum() {
                     data_segment[data_index].addr = data_addr;
                     data_addr++;
                     std::copy(line.begin(), line.end(), data_mem);
-                    while (index < 10) { 
-                        placeholder = placeholder + data_mem[index];
-                        index++;
+                    std::size_t msg_1 = line.find("string_space");
+                    std::size_t msg_2 = line.find("is_palin_msg");
+                    if (msg_1 != std::string::npos) {
+                        data_segment[data_index].content = val;
+                        stringArr[0] = palindrome;
                     }
-                    data_segment[data_index].operand = placeholder;
-                    data_segment[data_index].content = data_mem[11];
+                    else if (msg_2 != std::string::npos) {
+                        data_segment[data_index].content = val + 1;
+                        while (index < 28) {
+                            placeholder = placeholder + data_mem[index + 23];
+                            index++;
+                        }
+                        stringArr[1] = placeholder;
+                    }
+                    else { 
+                        data_segment[data_index].content = val + 2;
+                        while (index < 32) {
+                            placeholder = placeholder + data_mem[index + 24];
+                            index++;
+                        }
+                        stringArr[2] = placeholder;
+                    }
+
                     data_index++;
                     line_count++;
                 }
@@ -191,18 +206,11 @@ void storeAccum() {
          
             // add line to text_segment
             else if (type.compare("text") == 0) { 
-                if (line.compare("main:") == 0 || line.compare("length_loop:") == 0 || line.compare("end_length_loop:") == 0 || line.compare("test_loop:") == 0 || line.compare("is_palin:") == 0 || line.compare("not_palin:") == 0 || line.compare("exit:") == 0) {
-                    //cout << "offset: " << offset;
-                    instr_segment[instr_index].offset = offset;
-                    string removeColon = line;
-                    removeColon.erase(std::remove(removeColon.begin(), removeColon.end(), ':'), removeColon.end());
-                    instr_segment[instr_index].name = removeColon;
-                    //offset++;
-                    instr_index++;
-                    //cout<<"\n" << line;
-                    continue;
-                }
-                else if (line.compare(".text") != 0 && !line.empty()) { 
+                if (line.compare(".text") != 0 && !line.empty()) { 
+                    //cout << " line " << line;
+                    if (line.compare("main:") != 0 && line.compare("length_loop:") != 0 && line.compare("end_length_loop:") != 0
+                    && line.compare("test_loop:") != 0 && line.compare("is_palin:") != 0 && line.compare("not_palin:") != 0
+                    && line.compare("exit:") != 0) {
                     clearMem();
                     index = 0;
                     string placeholder = "";
@@ -217,10 +225,13 @@ void storeAccum() {
                             index++;
                         }
                         text_segment[text_index].instruction = assignInstruction(placeholder);
-                        //cout << " INSTR: " << text_segment[text_index].instruction;
                         index = 0;
                         placeholder = "";
-                        if (line.length() == 8) {
+                        std::size_t msg_1 = line.find("1024");
+                        if (msg_1 != std::string::npos) {
+                            placeholder = "$31 1024";
+                        }
+                        else if (line.length() == 8) {
                             while (index < 5) {
                                 placeholder = placeholder + text_mem[3 + index];
                                 index++;
@@ -302,15 +313,16 @@ void storeAccum() {
                                 placeholder = "bge";
                             }
                             text_segment[text_index].instruction = assignInstruction(placeholder);
-                            cout << " INSTR: " << text_segment[text_index].instruction;
+                            //cout << " INSTR: " << text_segment[text_index].instruction;
                             placeholder = "";
                             while (index < 7) {
                                 placeholder = placeholder + text_mem[index + 4];
                                 index++;
                             }
                             text_segment[text_index].operand = placeholder;
-                            cout << " PLACEHOLDER " << placeholder; 
+                            //cout << " PLACEHOLDER " << placeholder; 
                         }
+                    }
                         
 
                     }
@@ -376,12 +388,12 @@ void printResults(int ) {
     cout << "\n\nRESULT WRITTEN TO result.txt";
 }
 
-int main() { 
-    cout << "\nREADING palindrome.s" << "\nFILE CONTENT:\n";
+int main() {
     storeAccum();
     cout << "\n\nSUCCESSFUL READ";
     // initialize program counter
     string operand;
+    std::size_t msg_1;
     float speedup;
     Instruction currentInstruction;
     Data currentData;
@@ -524,6 +536,11 @@ int main() {
                 break;
             case 8: 
                 cout << "\nli " << currentText.operand;
+                operand = currentText.operand;
+                msg_1 = operand.find("1024");
+                if (msg_1 != std::string::npos) {
+                    break;
+                }
                 operand = currentText.operand;
                 operand = operand.substr(operand.find("$") + 1);
                 operand = operand.substr(0, operand.find(",")), 0, 0;
