@@ -1,0 +1,7 @@
+roma
+-----------------
+C: 168
+IC: 33
+Speedup: 1.57143
+
+This string is not a palindrome.

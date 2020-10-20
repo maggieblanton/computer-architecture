@@ -2,8 +2,6 @@
    for instructions on how to clear text file. 
    Reflected in the printResults() method and commented accordingly. */
 
-// https://github.com/cahuila/CS572-Micro-Architecture/blob/master/Lab2/gprSim.c
-
 #include<iostream>
 #include<fstream>
 #include<string>
