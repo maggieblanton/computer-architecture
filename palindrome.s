@@ -1,42 +1,33 @@
 .data
-is_palin_msg: .asciiz "The string is a palindrome."
-not_palin_msg: .asciiz "The string is not a palindrome."
-string_space: .space 1024
+0x00000000 0
+0x00000001 1
+0x00000002 2
 
 .text
-main:
-la $30, is_palin_msg
-li $31, 1024
-li $29, 8
+la $30 0
+li $29 0
 syscall
-la $1, string_space
-la $2, string_space
-length_loop:
-lb $3, ($2)
-beqz $3, test_loop
-addi $2, $2, 1
-b exit
-end_length_loop:
-subi $2, $2, 2
-test_loop:
-bge $1, $2, is_palin
-lb $3, ($1)
-lb $4, ($2)
-b is_palin
-bne $3, $4, not_palin
-addi $1, $1, 1
-subi $2, $2, 1
-b test_loop
-is_palin:
-la $30, is_palin_msg
-li $29, 4
+li $0 0
+li $1 0
+lb $2 $1
+beqz $2 2
+addi $1 $1 1
+b -4
+subi $1 $1 1
+bge $0 $1 6
+lb $2 $0
+lb $3 $1
+bne $2 $3 7
+addi $0 $0 1
+subi $1 $1 1
+b -7
+la $31 1
+li $29 1
 syscall
-b exit
-not_palin:
-la $30, not_palin_msg
-li $29, 4
+b 4
+la $31 2
+li $29 1
 syscall
-b exit
-exit:
-li $29, 10
+b 0
+li $29 2
 syscall
