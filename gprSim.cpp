@@ -256,7 +256,7 @@ void storeAccum() {
                                 index++;
                             }
                             text_segment[text_index].operand = placeholder;
-                            cout << " OP: " << placeholder;
+                            //cout << " OP: " << placeholder;
                         
                         //text_segment[text_index].instruction = assignInstruction(placeholder);
                         }
@@ -386,6 +386,7 @@ int main() {
     Instruction currentInstruction;
     Data currentData;
     string placeholder;
+    string result;
     int32 service_num;
     int32 arg1;
     int32 arg2;
@@ -436,12 +437,12 @@ int main() {
                     test = std::stoi(operand);
                     test = test * -1;
                     //label = test;
-                    cout << " op " << test;
+                    //cout << " op " << test;
                 }
                 else {
                     operand = currentText.operand[0];
                     test = std::stoi(operand);
-                    cout << " op " << test;
+                    //cout << " op " << test;
                 }
                 PC += test;
                 C += 4;
@@ -562,18 +563,19 @@ int main() {
                 service_num = register_mem[29];
                 //cout << " service num " << service_num;
                 if (service_num == 1) {
-                    cout << "\n" << stringArr[register_mem[31]];
+                    result = stringArr[register_mem[31]];
                 }
                 if (service_num == 2) {
                     cout << "\n\nSIMULATION COMPLETE\n\nC: " << C << "\nIC: " << IC;
+                    speedup = 8 * (float) IC / (float) C;
+                    cout << "\nSPEEDUP: " << speedup << "\n\nRESULT: " << result;
                     std::ofstream ofs;
                     ofs.open ("result.txt", std::ofstream::out | std::ofstream::trunc);
                     ofs << stringArr[0];
                     ofs << "\n-----------------";
                     ofs << "\nC: " << C << "\nIC: " << IC;
-                    speedup = 8 * (float) IC / (float) C;
                     ofs << "\nSpeedup: " << speedup;
-                    ofs << "\n\n" << stringArr[register_mem[31]];
+                    ofs << "\n\n" << result;
                     ofs.close();
 
                     cout << "\n\nEXITING PROGRAM\n";
