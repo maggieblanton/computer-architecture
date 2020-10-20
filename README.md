@@ -1,27 +1,26 @@
-# COMP4300- Project1
+# COMP4300- Project2
 
 Maggie Blanton, mab0146
 
 Project Overview: 
   
-  Program reads ASCII file consisting of .data and .text. Parses accordingly and stores in memory. 
-  The stack-based simulator uses PUSH, POP, ADD, MULT, and END commands to replicate quadratic evaluator functionality. 
-  The accumulator-based simulator uses LOAD, STO, ADD, MULT, and END commnds to replicate quadratic evaluator functionality.
-
+  The accumSim file developed in Project 1 was extended into a GPR machine. It runs
+  different instructions in different numbers of cycles. 
+  
+  This program determines whether or not an inputted string is a palindrome. 
+  
 Instructions to compile and run on Linux machine:
 
-    1. Download project1.tar.gz.
-    2. Decompress downloaded tarball. 
+    1. Download project2.tar.gz.
+    2. Type 'tar -xvf project2.tar' to extract the file to the current directory.
     3. Change directory to downloaded folder. 
-    4. Compile stackSim: g++ -std=c++11 stackSim.cpp -o stackSim
-    5. Compile accumSim, run: g++ -std=c++11 accumSim.cpp -o accumSim
-    6. Run stackSim: ./stackSim
-    7. Run accumSim: ./accumSim
+    4. Compile stackSim: g++ -std=c++11 gprSim.cpp -o gprSim
+    5. Run gprSim: ./gprSim
+    6. Type in a string for testing when prompted (ie. anna).
   
   Instructions to view output: 
   
-    1. Open the stackOutput.txt file created.
-    2. Open the accumOutput.txt file created.
+    1. Open the result.txt file created.
  
     Note: Output is also printed in the terminal. 
   
@@ -33,9 +32,8 @@ Instructions to compile and run on Linux machine:
   
     (Resolved)
     Upon completion, stackSim.cpp and accumSim.cpp both ran without errors in VS Code, but threw a 'Segmentation fault
-    (core dumped)' error while running on the tux machines. To fix this, the switch statement in the main methods of each 
-    had to be changed. The POP/STO commands were made the default and invalid arguments were handled with an 
-    additional switch statement. 
+    (core dumped)' error while running on the tux machines. To fix this, the program was ended after the final 'syscall' 
+    instruction.
  
   
 
