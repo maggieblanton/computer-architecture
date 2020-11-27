@@ -1,22 +1,24 @@
-# COMP4300- Project2
+# COMP4300- Project3
 
 Maggie Blanton, mab0146
 
 Project Overview: 
   
-  The accumSim file developed in Project 1 was extended into a GPR machine. It runs
-  different instructions in different numbers of cycles. 
+  The gprSim file developed in Project 2 was extended into a a simulator for a 
+  scalar pipelined architecture.
   
-  This program determines whether or not an inputted string is a palindrome. 
+  This program takes an input of 'lab3a.s', 'lab3b.s', or 'lab3c.s' and outputs 
+  results accordingly. Please note, if your test file name is 'lab3b.s', you will
+  also be promoted to input a palindrome test string. 
   
 Instructions to compile and run on Linux machine:
 
-    1. Download project2.tar.gz.
-    2. Type 'tar -xvf project2.tar' to extract the file to the current directory.
+    1. Download project3.tar.gz.
+    2. Type 'tar -xvf project3.tar' to extract the file to the current directory.
     3. Change directory to downloaded folder. 
-    4. Compile gprSim: g++ -std=c++11 gprSim.cpp -o gprSim
-    5. Run gprSim: ./gprSim
-    6. Type in a string for testing when prompted (ie. anna).
+    4. Compile pipeSim: g++ -std=c++11 pipeSim.cpp -o pipeSim
+    5. Run pipeSim: ./pipeSim
+    6. If necessary, type in a string for testing when prompted (ie. anna).
   
   Instructions to view output: 
   
@@ -25,13 +27,9 @@ Instructions to compile and run on Linux machine:
     Note: Output is also printed in the terminal. 
   
  Problems during development: 
- 
-    (Resolved)
-    Compiling with 'g++ stackSim.cop' or 'g++ accumSim.cpp' results in a "'to-string' is not a member of 'std' error. 
-    Fixed by specifying C++ version of 11 with command 'g++ -std=c++11...'. 
   
     (Resolved)
-    Upon completion, stackSim.cpp and accumSim.cpp both ran without errors in VS Code, but threw a 'Segmentation fault
+    Upon completion, gprSim.cpp both ran without errors in VS Code, but threw a 'Segmentation fault
     (core dumped)' error while running on the tux machines. To fix this, the program was ended after the final 'syscall' 
     instruction.
  
