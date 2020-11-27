@@ -1,7 +1,6 @@
-roma
+RESULT: 8880
 -----------------
-C: 168
-IC: 33
-Speedup: 1.57143
+C: 125
+IC: 25
+NOPS: 1
 
-This string is not a palindrome.
